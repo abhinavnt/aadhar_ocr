@@ -11,25 +11,34 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "@types/express": "^5.0.2",
-    "@types/node": "^22.15.29",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "inversify": "^7.5.2",
     "mongoose": "^8.15.1",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.1",
     "reflect-metadata": "^0.2.2",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "sharp": "^0.34.2",
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.2",
+    "@types/morgan": "^1.9.9",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.15.29",
     "@types/reflect-metadata": "^0.0.5",
     "@typescript-eslint/eslint-plugin": "^8.33.1",
     "@typescript-eslint/parser": "^8.33.1",
     "eslint": "^9.28.0",
     "nodemon": "^3.1.10",
-    "tsconfig-paths": "^4.2.0"
-  }
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.8.3"
+  },
+  "description": ""
 }
