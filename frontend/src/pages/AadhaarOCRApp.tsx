@@ -57,28 +57,21 @@ export default function AadhaarOCRApp() {
     setError(null)
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+    const response = await fetch(
+      `http://localhost:5000/api/aadhaar/details?aadhaarNumber=${encodeURIComponent(aadhaarNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`
+    );
 
-      // Mock extracted data based on manual input
-      const mockData: AadhaarData = {
-        aadhaarNumber: aadhaarNumber,
-        name: "John Doe",
-        dateOfBirth: dateOfBirth,
-        gender: "MALE",
-        address: "123 Sample Street, Sample City, Sample State - 123456",
-        fatherName: "Father Name",
-        pincode: "123456",
-        phoneNumber: "+91 9876543210",
-        email: "john.doe@example.com",
-      }
-
-      setExtractedData(mockData)
-    } catch (err) {
-      setError("Failed to process manual input. Please try again.")
-    } finally {
-      setIsProcessing(false)
+    if (!response.ok) {
+      throw new Error('Failed to retrieve Aadhaar details');
     }
+
+    const data: AadhaarData = await response.json();
+    setExtractedData(data);
+  } catch (err) {
+    setError("Failed to process manual input. Please try again.");
+  } finally {
+    setIsProcessing(false);
+  }
   }
 
   const handleOCRProcess = async () => {
@@ -92,22 +85,27 @@ export default function AadhaarOCRApp() {
 
     try {
       // Simulate OCR API call
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const formData = new FormData();
+      if (!uploadedImages.front || !uploadedImages.back) {
+        return null
+      }
+      formData.append('front', uploadedImages.front.file);
+      formData.append('back', uploadedImages.back.file);
 
-      // Mock extracted data
-      const mockData: AadhaarData = {
-        aadhaarNumber: "1234 5678 9012",
-        name: "Jane Smith",
-        dateOfBirth: "15/08/1990",
-        gender: "FEMALE",
-        address: "456 OCR Street, Digital City, Tech State - 654321",
-        fatherName: "Father Smith",
-        pincode: "654321",
-        phoneNumber: "+91 8765432109",
-        email: "jane.smith@example.com",
+      const response = await fetch('http://localhost:5000/api/aadhaar/ocr', {
+        method: 'POST',
+        body: formData,
+      });
+      console.log(response,"response from the api call");
+      
+
+      if (!response.ok) {
+        throw new Error('OCR processing failed');
       }
 
-      setExtractedData(mockData)
+      const data: AadhaarData = await response.json();
+
+      setExtractedData(data)
     } catch (err) {
       setError("OCR processing failed. Please try again with clearer images.")
     } finally {

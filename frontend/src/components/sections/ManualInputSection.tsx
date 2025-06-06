@@ -1,5 +1,4 @@
 import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -8,19 +7,19 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, UserCheck } from "lucide-react"
 
 interface ManualInputSectionProps {
-  onSubmit: (aadhaarNumber: string, dateOfBirth: string) => void
+  onSubmit: (aadhaarNumber: string, yearOfBirth: string) => void
   isProcessing: boolean
   error: string | null
 }
 
 export default function ManualInputSection({ onSubmit, isProcessing, error }: ManualInputSectionProps) {
   const [aadhaarNumber, setAadhaarNumber] = useState("")
-  const [dateOfBirth, setDateOfBirth] = useState("")
+  const [yearOfBirth, setYearOfBirth] = useState("")
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (aadhaarNumber && dateOfBirth) {
-      onSubmit(aadhaarNumber, dateOfBirth)
+    if (aadhaarNumber && yearOfBirth) {
+      onSubmit(aadhaarNumber, yearOfBirth)
     }
   }
 
@@ -46,13 +45,21 @@ export default function ManualInputSection({ onSubmit, isProcessing, error }: Ma
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="dob">Date of Birth</Label>
-          <Input id="dob" type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} />
+          <Label htmlFor="year">Year of Birth</Label>
+          <Input
+            id="year"
+            type="text"
+            placeholder="YYYY"
+            value={yearOfBirth}
+            onChange={(e) => setYearOfBirth(e.target.value)}
+            maxLength={4}
+            pattern="\d{4}"
+          />
         </div>
 
         <Button
           type="submit"
-          disabled={!aadhaarNumber || !dateOfBirth || isProcessing}
+          disabled={!aadhaarNumber || !yearOfBirth || isProcessing}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium py-3"
           size="lg"
         >
