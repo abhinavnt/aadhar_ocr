@@ -126,10 +126,4 @@ npm start
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Disclaimer
-
-This application is for demonstration purposes only. Always ensure compliance with local laws and regulations when processing personal identification documents.
