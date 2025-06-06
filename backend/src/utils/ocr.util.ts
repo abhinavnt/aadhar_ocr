@@ -1,7 +1,6 @@
 import { createWorker, PSM, OEM } from 'tesseract.js';
 
 export async function ocrImage(imagePath: string): Promise<string> {
-  console.log("reached the ocrImage extract", imagePath);
 
   // Create the worker with language, OEM, and logger options
   const worker = await createWorker('eng', OEM.DEFAULT, {
@@ -17,7 +16,6 @@ export async function ocrImage(imagePath: string): Promise<string> {
 
     // Perform OCR on the image
     const { data: { text } } = await worker.recognize(imagePath);
-    console.log("OCR result:", text);
     return text;
   } catch (error) {
     console.error("Error during OCR:", error);

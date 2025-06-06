@@ -1,54 +1,59 @@
 import { IAadhaar } from '../interfaces/IAadhaar';
 
 export function parseAadhaarText(frontText: string, backText: string): IAadhaar {
-  console.log("reached the aadhaar text");
-  console.log(frontText, "front end text", backText, "back text");
-
-  // Normalize the text (remove extra spaces, newlines, and special characters)
-  const normalizeText = (text: string) => text
-    .replace(/\s+/g, ' ')
-    .replace(/[^a-zA-Z0-9\s\/:,-]/g, '')
-    .trim();
-
-  const normalizedFrontText = normalizeText(frontText);
-  const normalizedBackText = normalizeText(backText);
-
-  // Aadhaar number (with or without spaces)
-  const aadhaarNumberMatch = normalizedFrontText.match(/\d{4}\s?\d{4}\s?\d{4}/) || normalizedBackText.match(/\d{4}\s?\d{4}\s?\d{4}/);
-  
-  // Name (match any string after "Name", "NAME", or similar)
-  const nameMatch = normalizedFrontText.match(/(?:Name|NAME)\s*[:\-]?\s*([A-Za-z\s]+)/i);
-  
-  // DOB (match various date formats)
-  const dobMatch = normalizedFrontText.match(/(?:DOB|Date\s*of\s*Birth|D\.O\.B\.)\s*[:\-]?\s*(\d{2}[\/\-]\d{2}[\/\-]\d{4})/i) ||
-                   normalizedFrontText.match(/\d{2}[\/\-]\d{2}[\/\-]\d{4}/); // Fallback for date-like strings
-  
-  // Gender
-  const genderMatch = normalizedFrontText.match(/(?:Gender|GENDER)\s*[:\-]?\s*(Male|Female)/i);
-  
-  // Address (match everything after "Address" until the Aadhaar number or end of text)
-  const addressMatch = normalizedBackText.match(/(?:Address|ADDRESS)\s*[:\-]?\s*([\s\S]+?)(?=\d{4}\s?\d{4}\s?\d{4}|$)/i);
-
-  console.log("reached the end");
-  console.log(aadhaarNumberMatch, "aadhaarNumberMatch");
-  console.log(nameMatch, "name");
-  console.log(dobMatch, "dobmatch");
-  console.log(genderMatch, "gender match");
-  console.log(addressMatch, "address match");
-
-  // Instead of throwing an error, return partial data with defaults for missing fields
-  const result: IAadhaar = {
-    aadhaarNumber: aadhaarNumberMatch ? aadhaarNumberMatch[0].replace(/\s/g, '') : '',
-    name: nameMatch ? nameMatch[1].trim() : '',
-    dateOfBirth: dobMatch ? dobMatch[1] : '',
-    gender: genderMatch ? genderMatch[1].toUpperCase() : '',
-    address: addressMatch ? addressMatch[1].trim() : '',
+  const extractedData: IAadhaar = {
+    aadhaarNumber: '',
+    name: '',
+    dateOfBirth: '',
+    gender: 'MALE',
+    address: '',
+    fatherName: '',
+    pincode: '',
+    phoneNumber: 'Not Available', // Default value
+    email: 'Not Available',       // Default value
   };
 
-  // Log a warning if any field is missing
-  if (!result.aadhaarNumber || !result.name || !result.dateOfBirth || !result.gender || !result.address) {
-    console.warn("Some Aadhaar fields could not be extracted:", result);
+  // Extract Aadhaar Number: 12-digit number in format "XXXX XXXX XXXX"
+  const aadhaarMatch = frontText.match(/\b\d{4}\s\d{4}\s\d{4}\b/);
+  if (aadhaarMatch) {
+    extractedData.aadhaarNumber = aadhaarMatch[0].replace(/\s/g, ''); // e.g., "344126576882"
   }
 
-  return result;
+  // Extract Name: First occurrence of two capitalized words
+  const nameMatch = frontText.match(/[A-Z][a-z]+\s[A-Z][a-z]+/);
+  if (nameMatch) {
+    extractedData.name = nameMatch[0]; // e.g., "Anogh Vinod"
+  }
+
+  // Extract Date of Birth: "Year of Birth: " followed by a 4-digit year
+  const dobMatch = frontText.match(/(Year of Birth:)\s*(\d{4})/i);
+  if (dobMatch) {
+    extractedData.dateOfBirth = dobMatch[2]; // e.g., "2007"
+  }
+
+  // Extract Gender: "Male" or "Female"
+  const genderMatch = frontText.match(/\b(Male|Female)\b/i);
+  if (genderMatch) {
+    extractedData.gender = genderMatch[0]; // e.g., "Male"
+  }
+
+  // Extract Father Name: "Father: " followed by a name
+  const fatherNameMatch = frontText.match(/Father:\s*([A-Z][a-z]+)/i);
+  if (fatherNameMatch) {
+    extractedData.fatherName = fatherNameMatch[1]; // e.g., "Vinod"
+  }
+
+  // Extract Address and Pincode from backText
+  const pincodeMatch = backText.match(/\b\d{6}\b/);
+  if (pincodeMatch) {
+    extractedData.pincode = pincodeMatch[0]; // e.g., "673506"
+    // Address is everything before the pincode
+    const pincodeIndex = backText.lastIndexOf(extractedData.pincode);
+    const addressText = backText.substring(0, pincodeIndex).trim();
+    // Extract the last few lines as the address (assuming multi-line OCR output)
+    const addressLines = addressText.split('\n').slice(-3).join(', ').replace(/[^\w\s,]/g, '');
+    extractedData.address = addressLines; // e.g., "VIA, Nadapuram, Chelakkad, Kozhikode, Kerala"
+  }
+
+  return extractedData;
 }

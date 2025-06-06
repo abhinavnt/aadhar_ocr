@@ -16,7 +16,7 @@ export class AadhaarRepository implements IAadhaarRepository {
   async save(aadhaar: IAadhaar): Promise<IAadhaar> {
     const existing = await this.findByAadhaarNumber(aadhaar.aadhaarNumber);
     if (existing) {
-      throw new Error('Aadhaar number already exists');
+      return existing
     }
     const newAadhaar = new Aadhaar(aadhaar);
     return newAadhaar.save();

@@ -15,7 +15,13 @@ export class AadhaarService implements IAadhaarService {
     
     const frontText = await ocrImage(frontImage.path);
     const backText = await ocrImage(backImage.path);
-    console.log("extracted the ocrImages");
+    // console.log(frontText,"extracted front end image");
+    // console.log("       ");
+    // console.log("       ");
+    // console.log("nextback side");
+    // console.log("       ");
+    // console.log("       ");
+    // console.log(backText,"extracted backend end image");
     
     const extractedData = parseAadhaarText(frontText, backText);
     console.log(extractedData,"extracted data here");
