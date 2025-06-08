@@ -58,7 +58,7 @@ export default function AadhaarOCRApp() {
 
     try {
     const response = await fetch(
-      `http://localhost:5000/api/aadhaar/details?aadhaarNumber=${encodeURIComponent(aadhaarNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`
+      `${import.meta.env.VITE_API_URL}/api/aadhaar/details?aadhaarNumber=${encodeURIComponent(aadhaarNumber)}&dateOfBirth=${encodeURIComponent(dateOfBirth)}`
     );
 
     if (!response.ok) {
@@ -92,7 +92,7 @@ export default function AadhaarOCRApp() {
       formData.append('front', uploadedImages.front.file);
       formData.append('back', uploadedImages.back.file);
 
-      const response = await fetch('http://localhost:5000/api/aadhaar/ocr', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/aadhaar/ocr`, {
         method: 'POST',
         body: formData,
       });
