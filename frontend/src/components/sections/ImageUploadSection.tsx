@@ -1,4 +1,4 @@
-import type React from "react"
+import React from "react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Upload, XCircle } from "lucide-react"
@@ -21,10 +21,25 @@ export default function ImageUploadSection({
   isProcessing,
   error,
 }: ImageUploadSectionProps) {
+  const [frontError, setFrontError] = React.useState<string | null>(null)
+  const [backError, setBackError] = React.useState<string | null>(null)
+
+  const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+
   const handleFileChange = (side: "front" | "back", e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      onImageUpload(side, file)
+      if (validImageTypes.includes(file.type)) {
+        onImageUpload(side, file)
+        if (side === "front") setFrontError(null)
+        else setBackError(null)
+      } else {
+        if (side === "front") {
+          setFrontError("Please select a valid image file (JPEG, PNG, GIF, or WebP).")
+        } else {
+          setBackError("Please select a valid image file (JPEG, PNG, GIF, or WebP).")
+        }
+      }
     }
   }
 
@@ -64,6 +79,9 @@ export default function ImageUploadSection({
               )}
             </label>
           </Button>
+          {frontError && (
+            <p className="text-sm text-red-600">{frontError}</p>
+          )}
           {uploadedImages.front && (
             <img
               src={uploadedImages.front.preview || "/placeholder.svg"}
@@ -100,6 +118,9 @@ export default function ImageUploadSection({
               )}
             </label>
           </Button>
+          {backError && (
+            <p className="text-sm text-red-600">{backError}</p>
+          )}
           {uploadedImages.back && (
             <img
               src={uploadedImages.back.preview || "/placeholder.svg"}
